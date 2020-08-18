@@ -96,4 +96,3 @@ abstract class TestCase extends \PHPUnit\Framework\TestCase
         return dirname(__DIR__) . '/vendor';
     }
 }
-© 2020 GitHub, Inc.
