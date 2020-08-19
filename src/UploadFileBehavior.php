@@ -10,8 +10,9 @@ use yii\web\UploadedFile;
 use yii\helpers\FileHelper;
 use backend\models\blog\BlogArticles;
 use yii\base\InvalidCallException;
-
-
+use yii\base\InvalidArgumentException;
+use yii\base\InvalidConfigException;
+use yii\base\NotSupportedException;
 
 /**
  *  UploadFileBehavior class
@@ -149,6 +150,25 @@ class UploadFileBehavior extends Behavior
      * @var [boolean | int]
      */
     private $time = false;
+
+        /**
+     * @inheritdoc
+     */
+    public function init()
+    {
+        parent::init();
+
+        if (!class_exists(Image::class)) {
+            throw new NotSupportedException("Yii2-imagine extension is required to use the UploadImageBehavior");
+        }
+
+        if ($this->directories === null) {
+            throw new InvalidConfigException('The "directories" property must be set.');
+        }
+        if (!is_array($this->directories)) {
+            throw new InvalidConfigException('The "directories" property must be an array.');
+        }
+    }
 
     /**
      * {@inheritdoc}
@@ -289,7 +309,6 @@ class UploadFileBehavior extends Behavior
     protected function isFile()
     {
         return  $this->getFileInstance() && $this->getFileInstance()->tempName;
-        
     }
 
 }

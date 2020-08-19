@@ -7,8 +7,8 @@
 		convertWarningsToExceptions="true"
 		stopOnFailure="false">
 		<testsuites>
-			<testsuite name="Integration">
-				<directory>./tests/integration</directory>
+			<testsuite name="Functional">
+				<directory>./tests/functional</directory>
 			</testsuite>
 			<testsuite name="Unit">
 				<directory>./tests/unit</directory>
