@@ -41,6 +41,13 @@ abstract class TestCase extends \PHPUnit\Framework\TestCase
                 '@bower' => '@vendor/bower',
                 '@npm' => '@vendor/npm',
             ],
+            'components' => [
+                'request' => [
+                    'cookieValidationKey' => 'wefJDF8sfdsfSDefwqdxj9oq',
+                    'hostInfo' => 'http://domain.com',
+                    'scriptUrl' => 'index.php',
+                ],
+            ],
         ], $config));
     }
     /**

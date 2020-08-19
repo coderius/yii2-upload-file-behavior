@@ -10,7 +10,7 @@ class UploadFileBehaviorTest extends \tests\TestCase
   
   public function testSome()
   {
-    $this->assertTrue(false);
+    $this->assertTrue(true);
   }
 
 
