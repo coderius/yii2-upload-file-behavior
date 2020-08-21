@@ -17,6 +17,7 @@ abstract class TestCase extends \PHPUnit\Framework\TestCase
     {
         parent::setUp();
         $this->mockWebApplication();
+        $this->setupTestDbData();
     }
     /**
      * Clean up after test.
@@ -40,12 +41,17 @@ abstract class TestCase extends \PHPUnit\Framework\TestCase
             'aliases' => [
                 '@bower' => '@vendor/bower',
                 '@npm' => '@vendor/npm',
+                '@uploadsPath' => '@tests/data/uploads',
             ],
             'components' => [
                 'request' => [
                     'cookieValidationKey' => 'wefJDF8sfdsfSDefwqdxj9oq',
                     'hostInfo' => 'http://domain.com',
                     'scriptUrl' => 'index.php',
+                ],
+                'db' => [
+                    'class' => 'yii\db\Connection',
+                    'dsn' => 'sqlite::memory:',
                 ],
             ],
         ], $config));
@@ -101,5 +107,32 @@ abstract class TestCase extends \PHPUnit\Framework\TestCase
     protected function getVendorPath()
     {
         return dirname(__DIR__) . '/vendor';
+    }
+
+    /**
+     * Setup tables for test ActiveRecord
+     */
+    protected function setupTestDbData()
+    {
+        $db = Yii::$app->getDb();
+
+        // Structure :
+
+        $table = 'article';
+        $columns = [
+            'id' => 'pk',
+            'img_src' => 'string',
+            'text' => 'string',
+        ];
+        $db->createCommand()->createTable($table, $columns)->execute();
+
+        // Data :
+
+        $db->createCommand()->batchInsert('article', ['img_src', 'text'], [
+            ['image-1.jpg', '1 image text'],
+            ['image-2.jpg', '2 image text'],
+            ['image-3.jpg', '3 image text'],
+        ])->execute();
+
     }
 }

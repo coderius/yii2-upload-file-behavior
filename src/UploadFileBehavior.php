@@ -1,18 +1,20 @@
 <?php
 //UploadFileBehavior.php
 
-namespace coderius\yii2UploadFileBehavior\UploadFileBehavior;
+namespace coderius\yii2UploadFileBehavior;
 
 use Closure;
 use yii\base\Behavior;
 use yii\db\ActiveRecord;
 use yii\web\UploadedFile;
 use yii\helpers\FileHelper;
-use backend\models\blog\BlogArticles;
 use yii\base\InvalidCallException;
 use yii\base\InvalidArgumentException;
 use yii\base\InvalidConfigException;
 use yii\base\NotSupportedException;
+use yii\imagine\Image;
+use Imagine\Image\Point;
+use Imagine\Image\Box;
 
 /**
  *  UploadFileBehavior class
@@ -187,7 +189,8 @@ class UploadFileBehavior extends Behavior
     public function events()
     {
         return [
-            BlogArticles::EVENT_BEFORE_VALIDATE => 'afterLoadHendler',
+            ActiveRecord::EVENT_BEFORE_INSERT => 'loadFile',
+            ActiveRecord::EVENT_BEFORE_INSERT => 'loadFile',
             ActiveRecord::EVENT_AFTER_INSERT => 'afterInsertHendler',
             ActiveRecord::EVENT_AFTER_UPDATE => 'afterUpdateHendler',
         ];
@@ -199,7 +202,7 @@ class UploadFileBehavior extends Behavior
      * @param [type] $event
      * @return void
      */
-    public function afterLoadHendler($event)
+    public function loadFile()
     {
         if($this->isFile()){
             $this->owner->file = $this->getFileInstance();//virtual attribute
