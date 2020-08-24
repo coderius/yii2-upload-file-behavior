@@ -52,7 +52,9 @@ use Imagine\Image\Box;
  *                    'uploadFileBehavior' => [
  *                        'class' => UploadFileBehavior::className(),
  *                        'nameOfAttributeStorage' => 'img_src',
- *                        'directories' => [
+                    
+                    
+ *                        'targets' => [
  *                            
  *                            [
  *                                'path' => function($attributes){
@@ -119,7 +121,7 @@ class UploadFileBehavior extends Behavior
      *
      * @var [string]
      */
-    public $newFileName;
+    public $newFileName = false;
 
     /**
      * Configuretion array for setting target paths to folders and uploading hendlers like in example:
@@ -137,8 +139,22 @@ class UploadFileBehavior extends Behavior
      *
      * @var [array]
      */
-    public $directories;
+    public $targets;
 
+
+    /**
+     * 'default' scenario set by default. 
+     * @var array the scenarios in which the behavior will be triggered
+     */
+    public $scenarios = [];
+
+    /**
+     * Flag for delete file with related item in db. Default set to true.
+     *
+     * @var boolean
+     */
+    public $deleteImageWithRecord = true;
+    
     /**
      * File instance populated by yii\web\UploadedFile::getInstance
      *
@@ -164,12 +180,16 @@ class UploadFileBehavior extends Behavior
             throw new NotSupportedException("Yii2-imagine extension is required to use the UploadImageBehavior");
         }
 
-        if ($this->directories === null) {
-            throw new InvalidConfigException('The "directories" property must be set.');
+        if ($this->targets == null || $this->targets == false || empty($this->targets)) {
+            throw new InvalidConfigException('The "targets" property must be set.');
         }
-        if (!is_array($this->directories)) {
-            throw new InvalidConfigException('The "directories" property must be an array.');
+        if (!is_array($this->targets)) {
+            throw new InvalidConfigException('The "targets" property must be an array.');
         }
+        if (empty($this->scenarios)) {
+            $this->scenarios[] = 'default';
+        }
+
     }
 
     /**
@@ -190,9 +210,10 @@ class UploadFileBehavior extends Behavior
     {
         return [
             ActiveRecord::EVENT_BEFORE_INSERT => 'loadFile',
-            ActiveRecord::EVENT_BEFORE_INSERT => 'loadFile',
+            ActiveRecord::EVENT_BEFORE_UPDATE => 'loadFile',
             ActiveRecord::EVENT_AFTER_INSERT => 'afterInsertHendler',
             ActiveRecord::EVENT_AFTER_UPDATE => 'afterUpdateHendler',
+            ActiveRecord::EVENT_AFTER_DELETE => 'afterDelete'
         ];
     }
 
@@ -232,6 +253,27 @@ class UploadFileBehavior extends Behavior
         $this->hendlersReducer(false);
     }          
     
+    /**
+     * Undocumented function
+     *
+     * @param [type] $event
+     * @return void
+     */
+    public function afterDelete($event)
+    {
+        if($this->deleteImageWithRecord){
+            foreach($this->targets as $target){
+                if ($target['path'] instanceof Closure || (is_array($target['path']) && is_callable($target['path']))) {
+                    $dirPath = $target['path']($this->owner->attributes);
+                }else{
+                    throw new InvalidCallException('Param `path` mast be instanceof Closure or callable method.');
+                }
+                FileHelper::removeDirectory($dirPath);
+            }    
+            
+        }
+    } 
+
 
     /**
      * Undocumented function
@@ -241,11 +283,11 @@ class UploadFileBehavior extends Behavior
      */
     protected function hendlersReducer($insert)
     {
-        if ($this->isFile())
+        if ($this->isFile() && $this->inScenario())
         {
-            foreach($this->directories as $dir){
-                if ($dir['path'] instanceof Closure || (is_array($dir['path']) && is_callable($dir['path']))) {
-                    $dirPath = $dir['path']($this->owner->attributes);
+            foreach($this->targets as $target){
+                if ($target['path'] instanceof Closure || (is_array($target['path']) && is_callable($target['path']))) {
+                    $dirPath = $target['path']($this->owner->attributes);
                 }else{
                     throw new InvalidCallException('Param `path` mast be instanceof Closure or callable method.');
                 }
@@ -257,8 +299,8 @@ class UploadFileBehavior extends Behavior
                 FileHelper::createDirectory($dirPath);
                 $newFilePath = $dirPath . $this->getNewFileName();
 
-                if ($dir['hendler'] instanceof Closure || (is_array($dir['hendler']) && is_callable($dir['hendler']))) {
-                    $dir['hendler']($this->getFileInstance()->tempName, $newFilePath);
+                if ($target['hendler'] instanceof Closure || (is_array($target['hendler']) && is_callable($target['hendler']))) {
+                    $target['hendler']($this->getFileInstance()->tempName, $newFilePath);
                 }else{
                     throw new InvalidCallException('Param `hendler` mast be instanceof Closure or callable method.');
                 }
@@ -312,6 +354,17 @@ class UploadFileBehavior extends Behavior
     protected function isFile()
     {
         return  $this->getFileInstance() && $this->getFileInstance()->tempName;
+    }
+
+    /**
+     * Detect if current model scenario in allowed by behavior
+     *
+     * @return void
+     */
+    protected function inScenario()
+    {
+        $model = $this->owner;
+        return in_array($model->scenario, $this->scenarios);
     }
 
 }

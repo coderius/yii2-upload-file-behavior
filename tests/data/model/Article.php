@@ -20,6 +20,10 @@ use Imagine\Image\Box;
 class Article extends \yii\db\ActiveRecord
 {
     public $file;
+
+    const BIG_SIZE_DIR    = "/big/";
+    const MIDDLE_SIZE_DIR = "/middle/";
+    const SMALL_SIZE_DIR  = "/small/";
     
     /**
      * {@inheritdoc}
@@ -36,7 +40,7 @@ class Article extends \yii\db\ActiveRecord
     {
         return [
             ['text', 'required'],
-            [['img_src'], 'safe'],
+            [['img_src', 'file'], 'safe'],
         ];
     }
 
@@ -45,12 +49,12 @@ class Article extends \yii\db\ActiveRecord
         return [
             'uploadFileBehavior' => [
                 'class' => UploadFileBehavior::className(),
-                // 'nameOfAttributeStorage' => 'img_src',
-                'directories' => [
+                'nameOfAttributeStorage' => 'img_src',
+                'targets' => [
                     
                     [
                         'path' => function($attributes){
-                            return \Yii::getAlias('@uploadsPath/' . $attributes['id'] . '/big/');
+                            return \Yii::getAlias('@uploadsPath/' . $attributes['id'] . self::BIG_SIZE_DIR);
                         },
                         'hendler' => function($fileTempName, $newFilePath){
                             Image::thumbnail($fileTempName, 900, 900*2/3)
@@ -62,7 +66,7 @@ class Article extends \yii\db\ActiveRecord
                     ],
                     [
                         'path' => function($attributes){
-                            return \Yii::getAlias('@uploadsPath/' . $attributes['id'] . '/middle/');
+                            return \Yii::getAlias('@uploadsPath/' . $attributes['id'] . self::MIDDLE_SIZE_DIR );
                         },
                         'hendler' => function($fileTempName, $newFilePath){
                             Image::thumbnail($fileTempName, 400, 400*2/3)
@@ -72,7 +76,7 @@ class Article extends \yii\db\ActiveRecord
                     ],
                     [
                         'path' => function($attributes){
-                            return \Yii::getAlias('@portfoleoPhotosPath/' . $attributes['id'] . '/small/');
+                            return \Yii::getAlias('@uploadsPath/' . $attributes['id'] . self::SMALL_SIZE_DIR );
                         },
                         'hendler' => function($fileTempName, $newFilePath){
                             Image::thumbnail($fileTempName, 150, 150*2/3)
