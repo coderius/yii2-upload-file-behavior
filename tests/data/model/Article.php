@@ -58,7 +58,7 @@ class Article extends \yii\db\ActiveRecord
                         },
                         'hendler' => function($fileTempName, $newFilePath){
                             Image::thumbnail($fileTempName, 900, 900*2/3)
-                            ->copy()
+                            // ->copy()
                             ->crop(new Point(0, 0), new Box(900, 900*2/3))
                             ->save($newFilePath, ['quality' => 80]);
                             sleep(1);

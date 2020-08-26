@@ -120,6 +120,31 @@ __!Note.__ _Don't forget to include the dependency namespaces._
 
 ```
 
+Short simple config:
+```
+'uploadFileBehavior' => [
+    'class' => UploadFileBehavior::className(),
+    'nameOfAttributeStorage' => 'img_src',
+    'newFileName' => 'image-123',
+    'targets' => [
+        [
+            'path' => '@uploadsPath',
+            'hendler' => [
+                'type' => UploadFileBehavior::TYPE_IMAGE,
+                'config' => [
+                    'size' => [
+                        'width' => 400,
+                        'height'=> 400*2/3
+                    ],
+                    'quality' => 80
+                ]
+            ]
+        ]
+    ]
+]        
+```
+In this case allowed params is: 'size' & 'quality'.
+
 
 Additional actions:
 -------------------------------------

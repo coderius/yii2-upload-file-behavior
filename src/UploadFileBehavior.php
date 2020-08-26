@@ -104,6 +104,9 @@ use Imagine\Image\Box;
  */
 class UploadFileBehavior extends Behavior
 {
+    const TYPE_IMAGE = 'image';
+    const TYPE_FILE = 'file';//not supported yet
+    
     /**
      * Name of attribute for recording file from form to ActiveRecord. DEfault name of attribute is `file`
      *
@@ -217,6 +220,12 @@ class UploadFileBehavior extends Behavior
         ];
     }
 
+    protected static function supportedFileTypes(){
+        return [
+            self::TYPE_IMAGE
+        ];
+    }
+
     /**
      * Undocumented function
      *
@@ -263,11 +272,7 @@ class UploadFileBehavior extends Behavior
     {
         if($this->deleteImageWithRecord){
             foreach($this->targets as $target){
-                if ($target['path'] instanceof Closure || (is_array($target['path']) && is_callable($target['path']))) {
-                    $dirPath = $target['path']($this->owner->attributes);
-                }else{
-                    throw new InvalidCallException('Param `path` mast be instanceof Closure or callable method.');
-                }
+                $dirPath = $this->getPath($target['path']);
                 FileHelper::removeDirectory($dirPath);
             }    
             
@@ -286,26 +291,61 @@ class UploadFileBehavior extends Behavior
         if ($this->isFile() && $this->inScenario())
         {
             foreach($this->targets as $target){
-                if ($target['path'] instanceof Closure || (is_array($target['path']) && is_callable($target['path']))) {
-                    $dirPath = $target['path']($this->owner->attributes);
-                }else{
-                    throw new InvalidCallException('Param `path` mast be instanceof Closure or callable method.');
-                }
+                $dirPath = $this->getPath($target['path']);
                 
                 if(!$insert){
+                    
                     FileHelper::removeDirectory($dirPath);
                 }
                 
                 FileHelper::createDirectory($dirPath);
                 $newFilePath = $dirPath . $this->getNewFileName();
 
-                if ($target['hendler'] instanceof Closure || (is_array($target['hendler']) && is_callable($target['hendler']))) {
-                    $target['hendler']($this->getFileInstance()->tempName, $newFilePath);
-                }else{
-                    throw new InvalidCallException('Param `hendler` mast be instanceof Closure or callable method.');
-                }
+                $this->getHendler($target['hendler'], $this->getFileInstance()->tempName, $newFilePath);
+                
             }
         }
+        return false;
+    }
+
+    protected function getPath($path){
+        if(is_string($path)){
+            $path = rtrim($path, '/') . '/';
+            $dirPath = \Yii::getAlias($path);
+        }
+        elseif ($path instanceof Closure || (is_array($path) && is_callable($path))) {
+            $dirPath = $path($this->owner->attributes);
+        }else{
+            throw new InvalidCallException('Param `path` mast be string instanceof Closure or callable method.');
+        }
+
+        return $dirPath;
+    }
+
+    protected function getHendler($hendler, $tmp, $path){
+        if ($hendler instanceof Closure || (is_array($hendler) && is_callable($hendler))) {
+            $hendler($tmp, $path);
+        }elseif(is_array($hendler) && array_key_exists('type', $hendler) && array_key_exists('config', $hendler)){
+            if(!in_array($hendler['type'], self::supportedFileTypes()))
+            {
+                throw new InvalidConfigException('File type not supported: ' . $hendler['type']);
+            }
+            switch($hendler['type']) {
+                case self::TYPE_IMAGE:
+                    $sizeW = $hendler['config']['size']['width'];
+                    $sizeH = $hendler['config']['size']['height'];
+                    $quality = $hendler['config']['quality'];
+                    Image::thumbnail($tmp, $sizeW, $sizeH)
+                            ->save($path, ['quality' => $quality]);
+                            sleep(1);
+                break;
+            }
+
+        }else{
+            throw new InvalidCallException('Param `hendler` mast be instanceof Closure ,callable method or array with allowed configs.');
+        }
+
+        return true;
     }
 
     /**
