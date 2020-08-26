@@ -1,4 +1,11 @@
 # Yii2 upload file behavior #
+[![Software License](https://img.shields.io/github/license/coderius/yii2-upload-file-behavior)](LICENSE.md)
+[![Code Coverage](https://scrutinizer-ci.com/g/coderius/yii2-upload-file-behavior/badges/coverage.png?b=master)](https://scrutinizer-ci.com/g/coderius/yii2-upload-file-behavior/?branch=master)
+[![Code Intelligence Status](https://scrutinizer-ci.com/g/coderius/yii2-upload-file-behavior/badges/code-intelligence.svg?b=master)](https://scrutinizer-ci.com/code-intelligence)
+[![Code Quality](https://img.shields.io/scrutinizer/quality/g/coderius/yii2-upload-file-behavior.svg?style=flat-square)](https://scrutinizer-ci.com/g/coderius/yii2-upload-file-behavior/?branch=master)
+[![CodeFactor](https://img.shields.io/codefactor/grade/github/coderius/yii2-upload-file-behavior)](https://www.codefactor.io/repository/github/coderius/yii2-upload-file-behavior)
+[![Build Status](https://scrutinizer-ci.com/g/coderius/yii2-upload-file-behavior/badges/build.png?b=master)](https://scrutinizer-ci.com/g/coderius/yii2-upload-file-behavior/build-status/master)
+
 
 ## About
 Yii2 upload file behavior - simple wey to upload images and files to server. 
