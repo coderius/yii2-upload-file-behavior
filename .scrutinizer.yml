@@ -41,6 +41,5 @@ build:
             override:
             - command: ./vendor/bin/phpunit tests
                 coverage:
-                file: build/logs/clover.xml   # <- Set this to where we find the coverage data.
-                                            #    The path is relative to the current directory.
-                format: clover        
+                file: build/logs/clover.xml
+                format: clover
