@@ -35,11 +35,9 @@ tools:
         enabled: true
         excluded_dirs: [vendor, tests]
 build:
-    nodes:
-        coverage:
-        tests:
-            override:
-            - 
+    tests:
+        override:
+            -
                 command: './vendor/bin/phpunit tests'
                 coverage:
                     file: 'build/logs/clover.xml'
