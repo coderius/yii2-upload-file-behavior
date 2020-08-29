@@ -17,11 +17,12 @@ checks:
         fix_identation_4spaces: true
         fix_doc_comments: true
 tools:
-    external_code_coverage:
-        timeout: 600
-        runs: 3
+    # external_code_coverage:
+    #     timeout: 600
+    #     runs: 3
     php_analyzer: true
-    php_code_coverage: false
+    # php_code_coverage: false
+    php_code_coverage: true
     php_code_sniffer:
         config:
             standard: PSR2
@@ -33,3 +34,13 @@ tools:
     php_cpd:
         enabled: true
         excluded_dirs: [vendor, tests]
+build:
+    nodes:
+        coverage:
+        tests:
+            override:
+            - command: ./vendor/bin/phpunit tests
+                coverage:
+                file: build/logs/clover.xml   # <- Set this to where we find the coverage data.
+                                            #    The path is relative to the current directory.
+                format: clover        
