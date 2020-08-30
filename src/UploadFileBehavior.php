@@ -110,7 +110,7 @@ class UploadFileBehavior extends Behavior
     /**
      * Name of attribute for recording file from form to ActiveRecord. DEfault name of attribute is `file`
      *
-     * @var [string]
+     * @var string
      */
     public $nameOfAttributeFile = 'file';
 
@@ -122,7 +122,7 @@ class UploadFileBehavior extends Behavior
     /**
      * Image name for renaming file and in next saving in file system and db
      *
-     * @var [string]
+     * @var string
      */
     public $newFileName = false;
 
@@ -140,7 +140,7 @@ class UploadFileBehavior extends Behavior
      *     }
      * ],
      *
-     * @var [array]
+     * @var array
      */
     public $targets;
 
@@ -168,7 +168,7 @@ class UploadFileBehavior extends Behavior
     /**
      * Undocumented variable
      *
-     * @var [boolean | int]
+     * @var boolean|int
      */
     private $time = false;
 
@@ -229,8 +229,7 @@ class UploadFileBehavior extends Behavior
     /**
      * Undocumented function
      *
-     * @param [type] $event
-     * @return void
+     *  @return void
      */
     public function loadFile()
     {
@@ -243,7 +242,6 @@ class UploadFileBehavior extends Behavior
     /**
      * Undocumented function
      *
-     * @param [type] $event
      * @return void
      */
     public function afterInsertHendler($event)
@@ -254,7 +252,6 @@ class UploadFileBehavior extends Behavior
     /**
      * Undocumented function
      *
-     * @param [type] $event
      * @return void
      */
     public function afterUpdateHendler($event)
@@ -265,7 +262,7 @@ class UploadFileBehavior extends Behavior
     /**
      * Undocumented function
      *
-     * @param [type] $event
+     * @param Event $event
      * @return void
      */
     public function afterDelete($event)
@@ -283,7 +280,7 @@ class UploadFileBehavior extends Behavior
     /**
      * Undocumented function
      *
-     * @param [type] $insert
+     * @param boolean $insert
      * @return void
      */
     protected function hendlersReducer($insert)
@@ -308,6 +305,10 @@ class UploadFileBehavior extends Behavior
         return false;
     }
 
+    /**
+     * @param string $path
+     * @return string $dirPath
+     */
     protected function getPath($path){
         if(is_string($path)){
             $path = rtrim($path, '/') . '/';
