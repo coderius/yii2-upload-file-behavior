@@ -1,17 +1,11 @@
 build:
-    nodes:
-      analysis:
-        tests:
-          override:
+    tests:
+        override:
             - php-scrutinizer-run
-    tests-and-coverage:
-        tests:
-            override:
-                - php-scrutinizer-run
-                    command: 'vendor/bin/phpunit tests --configuration phpunit.xml.dist'
-                    coverage:
-                        file: 'build/logs/clover.xml'
-                        format: 'clover'
+                command: 'vendor/bin/phpunit tests --configuration phpunit.xml.dist'
+                coverage:
+                    file: 'build/logs/clover.xml'
+                    format: 'clover'
 filter:
     excluded_paths: [tests/*]
 checks:
