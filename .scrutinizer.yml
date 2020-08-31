@@ -1,4 +1,10 @@
 build:
+    nodes:
+      analysis:
+        tests:
+          override:
+            - php-scrutinizer-run
+tests-and-coverage:
     tests:
         override:
             -
